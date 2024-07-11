@@ -1,6 +1,6 @@
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { MapContext } from "../../../App";
-import { MarkerMenu } from "../../widgets/MarkerMenu";
+import { MarkerMenu } from "../MarkerMenu";
 
 interface VertexMarkerProps {
   i: number;
