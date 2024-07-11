@@ -1,5 +1,4 @@
 import React, { createContext, useEffect, useState } from "react";
-import logo from "./logo.svg";
 import "./App.css";
 import { VertexMarker } from "./components/overlays/VertexMarker";
 import { Polyline } from "./components/overlays/Polyline";
@@ -25,6 +24,8 @@ function App() {
 
   const [coords, setCoords] = useState<naver.maps.Coord[]>([]);
 
+  const [isMarkerEditing, setIsMarkerEditing] = useState<boolean>(false);
+
   /**
    * 지도 초기화
    */
@@ -42,14 +43,26 @@ function App() {
       return;
     }
 
-    naver.maps.Event.addListener(map, "click", (e: naver.maps.PointerEvent) => {
-      const point = e.coord;
+    const listener = naver.maps.Event.addListener(
+      map,
+      "click",
+      (e: naver.maps.PointerEvent) => {
+        if (isMarkerEditing) {
+          return;
+        }
 
-      setCoords((prev) => {
-        return [...prev, point];
-      });
-    });
-  }, [map]);
+        const point = e.coord;
+
+        setCoords((prev) => {
+          return [...prev, point];
+        });
+      }
+    );
+
+    return () => {
+      naver.maps.Event.removeListener(listener);
+    };
+  }, [map, isMarkerEditing]);
 
   return (
     <div className="App">
@@ -59,10 +72,13 @@ function App() {
         {coords.map((coord, i) => {
           return (
             <VertexMarker
-              i={i}
-              setCoords={setCoords}
-              coord={coord}
               key={[coord.x, coord.y, i].join("")}
+              i={i}
+              coord={coord}
+              editable={isMarkerEditing ? false : i === 0 ? false : true}
+              setCoords={setCoords}
+              isMarkerEditing={isMarkerEditing}
+              setIsMarkerEditing={setIsMarkerEditing}
             />
           );
         })}
