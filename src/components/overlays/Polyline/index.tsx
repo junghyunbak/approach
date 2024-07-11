@@ -15,16 +15,19 @@ export function Polyline({ coords }: PolylineProps) {
       return;
     }
 
-    if (polyline) {
-      polyline.setMap(null);
-    }
+    const polyline = new naver.maps.Polyline({
+      map,
+      path: coords,
+      strokeWeight: 3,
+      strokeColor: "#7381FF",
+      clickable: true,
+    });
 
-    setPolyline(
-      new naver.maps.Polyline({
-        map,
-        path: coords,
-      })
-    );
+    setPolyline(polyline);
+
+    return () => {
+      polyline.setMap(null);
+    };
   }, [map, coords]);
 
   return <div>{/* Polyline 함수 컴포넌트 */}</div>;

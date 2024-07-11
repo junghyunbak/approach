@@ -2,6 +2,22 @@ import React, { useContext, useEffect, useState } from "react";
 import { MapContext } from "../../../App";
 import { MarkerMenu } from "../MarkerMenu";
 
+const wrapIcon = (content: string) => {
+  return `<div style="position:absolute; top:-10px; left:-10px">${content}</div>`;
+};
+
+const MARKER_SVG =
+  wrapIcon(`<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path fill-rule="evenodd" clip-rule="evenodd" d="M2 0C0.895431 0 0 0.895431 0 2V18C0 19.1046 0.895431 20 2 20H18C19.1046 20 20 19.1046 20 18V2C20 0.895431 19.1046 0 18 0H2ZM15 5H5V15H15V5Z" fill="#7381FF"/>
+</svg>
+`);
+
+const MARKER_ACTIVE_SVG =
+  wrapIcon(`<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path fill-rule="evenodd" clip-rule="evenodd" d="M2 0C0.895431 0 0 0.895431 0 2V18C0 19.1046 0.895431 20 2 20H18C19.1046 20 20 19.1046 20 18V2C20 0.895431 19.1046 0 18 0H2ZM15 5H5V15H15V5Z" fill="#FFCF73"/>
+</svg>
+`);
+
 interface VertexMarkerProps {
   i: number;
   coord: naver.maps.Coord;
@@ -131,9 +147,30 @@ export function VertexMarker({
   ]);
 
   /**
+   * 마커 위치가 편집중인 상태에서 마커 스타일 변경
+   */
+  useEffect(() => {
+    if (!marker) {
+      return;
+    }
+
+    if (isMarkerPosEditing) {
+      marker.setIcon({
+        content: MARKER_ACTIVE_SVG,
+      });
+    } else {
+      marker.setIcon({
+        content: MARKER_SVG,
+      });
+    }
+  }, [marker, isMarkerPosEditing]);
+
+  /**
    * 마커 삭제, 위치이동 시 동작 함수
    */
   const handlePosMoveButtonClick = () => {
+    setIsMenuOpen(false);
+
     setIsMarkerPosEditing(true);
     setIsMarkerEditing(true);
   };
